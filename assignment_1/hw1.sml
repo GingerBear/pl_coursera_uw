@@ -95,3 +95,27 @@ fun oldest(dates: (int*int*int) list) =
     in
       SOME (oldest_nonempty dates)
     end
+
+fun no_dup (months: int list) =
+  let
+    fun contains (uniq: int list, month: int) =
+      if null uniq
+      then false
+      else hd uniq = month orelse contains(tl uniq, month)
+
+    fun no_dup_2(uniq: int list, months: int list) =
+      if null months
+        then uniq
+        else
+          if contains (uniq, hd months)
+          then no_dup_2(uniq, tl months)
+          else no_dup_2(uniq@[hd months], tl months)
+  in
+    no_dup_2([], months)
+  end
+
+fun number_in_months_challenge (dates: (int*int*int) list, months: int list) =
+  number_in_months(dates, no_dup months)
+
+fun dates_in_months_challenge (dates: (int*int*int) list, months: int list) =
+  dates_in_months(dates, no_dup months)
