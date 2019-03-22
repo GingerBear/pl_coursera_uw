@@ -85,4 +85,4 @@ fun all_same_color (cards) =
   case cards of
     [] => true
     | _::[] => true
-    | (suit, _)::(suit', _)::cards' => card_color(suit) = card_color(suit') andalso all_same_color(cards')
+    | card::card'::cards' => card_color(card) = card_color(card') andalso all_same_color(card'::cards')
