@@ -75,7 +75,6 @@ fun card_value (suit, rank) =
     | Ace => 11
     | _ => 10
 
-
 fun remove_card (cs, c, e) =
   case cs of
     [] => raise e
@@ -86,3 +85,44 @@ fun all_same_color (cards) =
     [] => true
     | _::[] => true
     | card::card'::cards' => card_color(card) = card_color(card') andalso all_same_color(card'::cards')
+
+fun sum_cards (cards) =
+  let
+    fun sum (cards, acc) =
+      case cards of
+        [] => acc
+        | card::cards' => sum(cards', acc + card_value card)
+  in
+    sum(cards, 0)
+  end
+
+fun score(helds, goal) =
+  let
+    val sum = sum_cards helds
+    val prescore = if sum > goal then (sum - goal) * 3 else goal - sum
+  in
+    if all_same_color helds then prescore div 2 else prescore
+  end
+
+fun officiate(cards, moves, goal) =
+  let
+    fun play(cards, moves, goal, helds) =
+      let
+        val score = score(helds, goal)
+      in
+        if score > goal then score
+        else
+          case moves of
+            [] => score
+            | move::moves' =>
+              case move of
+                Discard card => play(cards, moves', goal, remove_card(helds, card, IllegalMove))
+                | Draw =>
+                  case cards of
+                    [] => score
+                    | card::cards' => play(cards', moves', goal, card::helds)
+      end
+
+  in
+    play(cards, moves, goal, [])
+  end
